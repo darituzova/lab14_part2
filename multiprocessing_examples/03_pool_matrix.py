@@ -90,7 +90,16 @@ def pool_multiply(A, B, num_processes):
     #          result[i][j] = val
 
     # --- Ваш код здесь ---
-
+    # Подготавливаем список аргументов для каждой задачи
+    args = [(i, j, A, B) for i in range(rows) for j in range(cols)]
+    
+    # Создаем пул процессов и выполняем задачи параллельно
+    with Pool(processes=num_processes) as pool:
+        results_list = pool.starmap(element, args)
+    
+    # Заполняем результирующую матрицу
+    for (i, j, val) in results_list:
+        result[i][j] = val
     # --- Конец вашего кода ---
 
     return result
@@ -121,5 +130,16 @@ if __name__ == '__main__':
     #   assert par_result == seq_result, "Результаты не совпадают!"
 
     # --- Ваш код здесь ---
+    print("\nПараллельное вычисление с Pool:")
 
+    # Тестируем с разным количеством процессов
+    for n in [1, 2, 4]:
+        t = time.time()
+        par_result = pool_multiply(matrix_a, matrix_b, n)
+        elapsed = time.time() - t
+        
+        print(f"Pool ({n} процессов): {elapsed:.4f} сек")
+        
+    # Проверяем корректность
+    assert par_result == seq_result, "Результаты не совпадают!"
     # --- Конец вашего кода ---
